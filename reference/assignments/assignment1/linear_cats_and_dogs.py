@@ -53,7 +53,7 @@ use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 torch.backends.cudnn.benchmark = True
 
-best_vloss = 1_000_000.
+best_Accuracy=0
 n_epochs=100
 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 for it in range(n_epochs):
@@ -91,8 +91,8 @@ for it in range(n_epochs):
 
     accuracy = 100 * correct / size_of_validation_set
     # Track best performance, and save the model's state
-    if vloss.item() < best_vloss:
-        best_vloss = vloss.item()
+    if accuracy > best_Accuracy:
+        best_Accuracy = accuracy
         model_path = 'model_{}_{}'.format(timestamp, accuracy)
         torch.save(model, model_path)
         best_validation_accuracy=accuracy;
