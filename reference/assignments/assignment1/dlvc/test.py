@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 
+
 class PerformanceMeasure(metaclass=ABCMeta):
     '''
     A performance measure.
@@ -61,16 +62,16 @@ class Accuracy(PerformanceMeasure):
         Ctor.
         '''
 
+
+        self.acc = []
         self.reset()
 
     def reset(self):
         '''
         Resets the internal state.
         '''
-
-        # TODO implement
-
-        pass
+        self.target = None
+        self.prediction = None
 
     def update(self, prediction: np.ndarray, target: np.ndarray):
         '''
@@ -81,16 +82,15 @@ class Accuracy(PerformanceMeasure):
         Raises ValueError if the data shape or values are unsupported.
         '''
 
-        # TODO implement
-
-        pass
+        self.prediction =prediction
+        self.target = target
 
     def __str__(self):
         '''
         Return a string representation of the performance.
         '''
 
-        # TODO implement
+        print("accuracy:",self.acc)
         # return something like "accuracy: 0.395"
 
         pass
@@ -103,9 +103,10 @@ class Accuracy(PerformanceMeasure):
 
         # See https://docs.python.org/3/library/operator.html for how these
         # operators are used to compare instances of the Accuracy class
-        # TODO implement
-
-        pass
+        if self.acc < other:
+            return True
+        else:
+            return False
 
     def __gt__(self, other) -> bool:
         '''
@@ -113,9 +114,10 @@ class Accuracy(PerformanceMeasure):
         Raises TypeError if the types of both measures differ.
         '''
 
-        # TODO implement
-
-        pass
+        if self.acc > other:
+            return True
+        else:
+            return False
 
     def accuracy(self) -> float:
         '''
@@ -123,7 +125,9 @@ class Accuracy(PerformanceMeasure):
         Returns 0 if no data is available (after resets).
         '''
 
-        # TODO implement
-        # on this basis implementing the other methods is easy (one line)
-
-        pass
+        if self.target is None or self.prediciton is None:
+            return 0
+        else:
+            correct = (self.predicted == self.target).sum()
+            self.acc = 100 * correct / len(self.target)
+            return self.acc

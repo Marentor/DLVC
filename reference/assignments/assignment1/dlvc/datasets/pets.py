@@ -51,6 +51,8 @@ class PetsDataset(ClassificationDataset):
 
         cifar_train_data = cifar_train_data.reshape((len(cifar_train_data), 3, 32, 32))
         cifar_train_data = np.rollaxis(cifar_train_data, 1, 4)
+        permute = [2, 1, 0]
+        cifar_train_data=cifar_train_data[:,:,:,permute]
 
         self.cifar_train_labels = np.array(self.cifar_train_labels)
         # Locate position of labels that equal to i

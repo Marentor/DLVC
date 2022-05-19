@@ -24,8 +24,8 @@ def type_cast(dtype: np.dtype) -> Op:
     '''
 
     def op(sample: np.ndarray) -> np.ndarray:
-        sample.astype(dtype)
-        return sample
+
+        return sample.astype(dtype)
 
     return op
 
@@ -36,10 +36,7 @@ def vectorize() -> Op:
     '''
 
     def op(sample: np.ndarray) -> np.ndarray:
-        x=sample.shape[0]
-        sample=sample.ravel()
-        sample=np.reshape(sample,(x,3072))
-        return sample
+        return sample.ravel()
 
     return op
 
@@ -70,9 +67,10 @@ def hwc2chw() -> Op:
     Flip a 3D array with shape HWC to shape CHW.
     '''
 
-    # TODO implement (see np.transpose)
+    def op(sample: np.ndarray) -> np.ndarray:
+        return np.transpose(sample,(2,0,1))
+    return op
 
-    pass
 
 def hflip() -> Op:
     '''

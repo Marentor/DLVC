@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 import torch.nn as nn
 
 from ..model import Model
@@ -22,7 +23,15 @@ class CnnClassifier(Model):
         wd: weight decay to use for training.
         '''
 
-        # TODO implement
+        self.net=net
+        self.input_shape=input_shape
+        self.num_classes=num_classes
+        self.lr=lr
+        self.wd=wd
+
+        self.criterion = torch.nn.CrossEntropyLoss()
+        self.optimizer = torch.optim.SGD(net.parameters(), lr=lr,weight_decay=wd,momentum=0.9,nesterov=True)
+
 
         # Inside the train() and predict() functions you will need to know whether the network itself
         # runs on the CPU or on a GPU, and in the latter case transfer input/output tensors via cuda() and cpu().
@@ -30,25 +39,20 @@ class CnnClassifier(Model):
         # You will want to initialize the optimizer and loss function here.
         # Note that PyTorch's cross-entropy loss includes normalization so no softmax is required
 
-        pass
 
     def input_shape(self) -> tuple:
         '''
         Returns the expected input shape as a tuple.
         '''
 
-        # TODO implement
-
-        pass
+        return self.input_shape
 
     def output_shape(self) -> tuple:
         '''
         Returns the shape of predictions for a single sample as a tuple, which is (num_classes,).
         '''
 
-        # TODO implement
-
-        pass
+        return self.output_shape()
 
     def train(self, data: np.ndarray, labels: np.ndarray) -> float:
         '''
@@ -61,11 +65,29 @@ class CnnClassifier(Model):
         Raises RuntimeError on other errors.
         '''
 
-        # TODO implement
+        self.net.train()
+
+
+        data = torch.from_numpy(data)
+        labels = torch.from_numpy(labels)
+        if next(self.net.parameters()).is_cuda:
+            device = torch.device("cuda:0")
+        else:
+            device = torch.device("cpu")
+        # Transfer to GPU
+        data,labels = data.to(device),labels.to(device)
+        self.optimizer.zero_grad()
+        outputs = self.net(data.float())
+        # Compute the loss and its gradients
+        loss = self.criterion(outputs, labels.long())
+        loss.backward()
+        # Adjust learning weights
+        self.optimizer.step()
+
         # Make sure to set the network to train() mode
         # See above comments on CPU/GPU
 
-        pass
+        return loss.cpu()
 
     def predict(self, data: np.ndarray) -> np.ndarray:
         '''
@@ -77,10 +99,21 @@ class CnnClassifier(Model):
         Raises RuntimeError on other errors.
         '''
 
-        # TODO implement
+        self.net.eval()
+
+        data = torch.from_numpy(data)
+        if next(self.net.parameters()).is_cuda:
+            device = torch.device("cuda:0")
+        else:
+            device = torch.device("cpu")
+        # Transfer to GPU
+        data = data.to(device)
+        output=self.net(data)
+        predictions=nn.Softmax(output)
+        return predictions
+
+
 
         # Pass the network's predictions through a nn.Softmax layer to obtain softmax class scores
         # Make sure to set the network to eval() mode
         # See above comments on CPU/GPU
-
-        pass

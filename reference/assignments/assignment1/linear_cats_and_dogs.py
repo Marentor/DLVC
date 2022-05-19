@@ -7,6 +7,7 @@ from dlvc.test import Accuracy
 import dlvc.ops as ops
 import numpy as np
 import torch
+import cv2
 
 
 class LinearClassifier(torch.nn.Module):
@@ -33,7 +34,6 @@ p=PetsDataset(r"C:\Users\marti\PycharmProjects\pythonProject\cifar-10-batches-py
 validation_Batches=BatchGenerator(p,size_of_batch,False,op)
 p=PetsDataset(r"C:\Users\marti\PycharmProjects\pythonProject\cifar-10-batches-py",3)
 test_Batches=BatchGenerator(p,size_of_batch,False,op)
-
 
 
 

@@ -64,17 +64,20 @@ class BatchGenerator:
 
         if(shuffle==True):
             shuffler = np.random.permutation(len(data))
-            data=data(shuffler)
-            labels=labels(shuffler)
-            indexes=indexes(shuffler)
+            data=data[shuffler]
+            labels=labels[shuffler]
+            indexes=indexes[shuffler]
 
         for i in range(num_of_batches):
             b=Batch()
             new_data=data[num * i:num * (i + 1)]
+            changed_data=[]
             if (op is not None):
-                new_data = op(new_data)
+                for x in range(len(new_data)):
+                   changed_data.append(op(new_data[x]))
 
-            b.data=new_data
+
+            b.data=np.array(changed_data)
             b.label=labels[num * i:num * (i + 1)]
             b.idx=indexes[num * i:num * (i + 1)]
             batches.append(b)
