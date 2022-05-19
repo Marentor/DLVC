@@ -37,8 +37,8 @@ class Net(nn.Module):
 net = Net()
 
 op = ops.chain([
-    # ops.hflip(),
-    # ops.rcrop(8,2,"constant"),
+    ops.hflip(),
+    ops.rcrop(8,2,"constant"),
     ops.hwc2chw(),
     ops.type_cast(np.float32),
     ops.add(-127.5),
@@ -97,4 +97,4 @@ for t_batch in test_Batches:
     predictions = clf.predict(data)
     predictions = predictions.detach().numpy()
     accuracy.update(predictions, labels)
-print(accuracy)
+print("Test",accuracy)

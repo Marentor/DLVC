@@ -103,12 +103,13 @@ def rcrop(sz: int, pad: int, pad_mode: str) -> Op:
         if (len(sample) + pad) < sz:
             raise ValueError
         if pad > 0:
-            sample = np.pad(sample,((pad,pad),(pad,pad),(0,0)), pad_mode)
+            sample = np.pad(sample, ((pad, pad), (pad, pad), (0, 0)), pad_mode)
         w, h = sample.shape[:2]
         x, y = np.random.randint(h - sz), np.random.randint(w - sz)
-        sample = sample[y:y +sz, x:x +sz]
+        sample = sample[y:y + sz, x:x + sz]
+        sample = np.resize(sample, (32, 32, 3))
         return sample
+
     return op
 
     # https://numpy.org/doc/stable/reference/generated/numpy.pad.html will be helpful
-
