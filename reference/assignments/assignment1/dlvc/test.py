@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 
+import numpy
 import numpy as np
+import torch
 
 
 class PerformanceMeasure(metaclass=ABCMeta):
@@ -62,16 +64,16 @@ class Accuracy(PerformanceMeasure):
         Ctor.
         '''
 
-
-        self.acc = []
+        self.target = []
+        self.prediction = []
         self.reset()
 
     def reset(self):
         '''
         Resets the internal state.
         '''
-        self.target = None
-        self.prediction = None
+        self.target.clear()
+        self.prediction.clear()
 
     def update(self, prediction: np.ndarray, target: np.ndarray):
         '''
@@ -81,19 +83,18 @@ class Accuracy(PerformanceMeasure):
         target must have shape (s,) and values between 0 and c-1 (true class labels).
         Raises ValueError if the data shape or values are unsupported.
         '''
-
-        self.prediction =prediction
-        self.target = target
+        predictions = numpy.argmax(prediction, 1)
+        self.prediction.append(predictions)
+        self.target.append(target)
 
     def __str__(self):
         '''
         Return a string representation of the performance.
         '''
-
-        print("accuracy:",self.acc)
+        acc= self.accuracy()
+        s=f"accuracy: {acc:.3f}"
+        return s
         # return something like "accuracy: 0.395"
-
-        pass
 
     def __lt__(self, other) -> bool:
         '''
@@ -103,7 +104,7 @@ class Accuracy(PerformanceMeasure):
 
         # See https://docs.python.org/3/library/operator.html for how these
         # operators are used to compare instances of the Accuracy class
-        if self.acc < other:
+        if self.accuracy() < other:
             return True
         else:
             return False
@@ -114,7 +115,7 @@ class Accuracy(PerformanceMeasure):
         Raises TypeError if the types of both measures differ.
         '''
 
-        if self.acc > other:
+        if self.accuracy() > other:
             return True
         else:
             return False
@@ -125,9 +126,12 @@ class Accuracy(PerformanceMeasure):
         Returns 0 if no data is available (after resets).
         '''
 
-        if self.target is None or self.prediciton is None:
+        correct = 0
+        size = 0
+        if self.target is None or self.prediction is None:
             return 0
         else:
-            correct = (self.predicted == self.target).sum()
-            self.acc = 100 * correct / len(self.target)
-            return self.acc
+            for i in range(len(self.prediction)):
+                correct += (self.prediction[i] == self.target[i]).sum()
+                size += len(self.prediction[i])
+        return correct / size

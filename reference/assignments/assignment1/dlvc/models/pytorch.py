@@ -109,8 +109,9 @@ class CnnClassifier(Model):
         # Transfer to GPU
         data = data.to(device)
         output=self.net(data)
-        predictions=nn.Softmax(output)
-        return predictions
+        softmax=nn.Softmax(0)
+        predictions=softmax(output)
+        return predictions.cpu()
 
 
 
