@@ -38,11 +38,12 @@ class Net(nn.Module):
         x = self.fc3(x)
         return x
 
+
 net = Net()
 
 op = ops.chain([
     #ops.hflip(),
-    #ops.rcrop(16,0,"constant"),
+    # ops.rcrop(2,0,"constant"),
     ops.hwc2chw(),
     ops.type_cast(np.float32),
     ops.add(-127.5),
@@ -61,15 +62,14 @@ use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 net.to(device)
 
-clf = CnnClassifier(net, (0, 32, 32, 3), 2, 0.01, 0)
+clf = CnnClassifier(net, (0, 32, 32, 3), 2, 0.01, 0.0001)
 accuracy = Accuracy()
 
-losses = []
+
 best_accuracy = 0
 for epoch in range(100):
     print("epoch", epoch + 1)
-    running_loss = 0.
-    last_loss = 0.
+    losses = []
     for batch in training_Batches:
         data = batch.data
         labels = batch.label

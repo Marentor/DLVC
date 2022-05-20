@@ -52,7 +52,7 @@ class CnnClassifier(Model):
         Returns the shape of predictions for a single sample as a tuple, which is (num_classes,).
         '''
 
-        return self.output_shape()
+        return (self.output_shape,)
 
     def train(self, data: np.ndarray, labels: np.ndarray) -> float:
         '''
@@ -83,6 +83,7 @@ class CnnClassifier(Model):
         loss.backward()
         # Adjust learning weights
         self.optimizer.step()
+
 
         # Make sure to set the network to train() mode
         # See above comments on CPU/GPU
